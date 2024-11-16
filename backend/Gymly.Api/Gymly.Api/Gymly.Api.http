@@ -1,6 +1,0 @@
-@Gymly.Api_HostAddress = http://localhost:5022
-
-GET {{Gymly.Api_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###
