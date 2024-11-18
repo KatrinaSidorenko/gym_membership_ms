@@ -4,6 +4,8 @@ using Gymly.Core.Models;
 using Gymly.Core.Models.Users;
 using Gymly.Persistence.Providers;
 using Gymly.Shared.Helpers;
+using Gymly.Shared.Results;
+using Gymly.Shared.Results.Messages;
 
 namespace Gymly.Persistence.Repositories;
 
@@ -15,7 +17,7 @@ public class EnrollmentRepository : IEnrollmentRepository
         DbProvider = dbProvider;
     }
 
-    public async Task<IEnumerable<Enrollment>> GetByClassId(long classId, CancellationToken ct)
+    public async Task<Result<IEnumerable<Enrollment>>> GetByClassId(long classId, CancellationToken ct)
     {
         var enrollmentAliases = new DbAliasesBuilder<Enrollment>()
             .AddAliases()
@@ -55,16 +57,16 @@ public class EnrollmentRepository : IEnrollmentRepository
                 new { classId },
                 splitOn: "member_id,payment_id");
 
-            return enrollments;
+            return Result.Success(enrollments);
         }
         catch (Exception ex)
         {
-            throw new ApplicationException("An error occurred while fetching enrollments.", ex);
+            return EnrollmentStatuses.FailToGetEnrollments.GetFailureResult<IEnumerable<Enrollment>>(ex.Message);
         }
     }
 
 
-    public async Task EnrollMemberToClass(Enrollment enrollment, CancellationToken ct)
+    public async Task<Result<bool>> EnrollMemberToClass(Enrollment enrollment, CancellationToken ct)
     {
         var query = @"INSERT INTO Enrollment (class_id, member_id, enrollment_date) 
                       VALUES (@ClassId, @MemberId, @EnrollmentDate);
@@ -75,10 +77,11 @@ public class EnrollmentRepository : IEnrollmentRepository
             using var connection = await DbProvider.CreateConnection(ct);
             var enrollmentId = await connection.ExecuteScalarAsync<long>(query, enrollment);
 
+            return Result.Success(true);
         }
         catch (Exception ex)
         {
-            throw new ApplicationException("An error occurred while enrolling member to class.", ex);
+            return EnrollmentStatuses.FailToEnrollMemberToClass.GetFailureResult<bool>(ex.Message);
         }
     }
 }

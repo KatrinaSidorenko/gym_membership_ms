@@ -28,17 +28,25 @@ public class EnrollmentsController : ControllerBase
     public async Task<IActionResult> GetByClassId(int classId, CancellationToken ct)
     {
         var enrollments = await _enrollmentRepository.GetByClassId(classId, ct);
-        return Ok(enrollments);
+        if (!enrollments.IsSuccessful)
+        {
+            return BadRequest(enrollments.Code);
+        }
+
+        return Ok(enrollments.Data);
     }
 
-    // todo enroll member to class
     [HttpPost]
     public async Task<IActionResult> EnrollMemberToClass([FromBody] CreateEnrollmentRequest createEnrollment, CancellationToken ct)
     {
         var mappedEnrollment = _mapper.Map<CreateEnrollmentRequest, Enrollment>(createEnrollment);
         var identity = _identityManager.GetCurrentUser();
-        // TODO: ADD member id from token
-        mappedEnrollment.MemberId = 1;
+        if (identity == null)
+        {
+            return Unauthorized();
+        }
+
+        mappedEnrollment.MemberId = identity.Id;
 
         await _enrollmentRepository.EnrollMemberToClass(mappedEnrollment, ct);
 

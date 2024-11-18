@@ -1,11 +1,12 @@
 ﻿using Gymly.Core.Models;
+using Gymly.Shared.DTOs;
 using Gymly.Shared.Requests.SportClass;
+using Gymly.Shared.Results;
 
 namespace Gymly.Business.Abstractions;
 
 public interface ISportClassRepository
 {
-    Task<long> Create(SportClass sportClass, CancellationToken ct);
-    Task<IEnumerable<SportClass>> GetAll(CancellationToken ct);
-    Task<decimal> GetClassPaymentsAmount(long classId, CancellationToken ct);
+    Task<Result<bool>> Create(SportClass sportClass, CancellationToken ct);
+    Task<Result<IEnumerable<ExtendedSportClass>>> GetAll(CancellationToken ct, DateTime? dateTime = null);
 }

@@ -23,7 +23,12 @@ public class PaymentsController : ControllerBase
     public async Task<IActionResult> GetMemberPayments(long memberId, CancellationToken ct)
     {
         var payments = await _paymentRepository.GetMemberPayments(memberId, ct);
-        return Ok(payments);
+        if (!payments.IsSuccessful)
+        {
+            return BadRequest(payments.Code);
+        }
+
+        return Ok(payments.Data);
     }
 
     [HttpPost] // with a help of trigger
@@ -31,6 +36,11 @@ public class PaymentsController : ControllerBase
     {
         var mappedPayment = _mapper.Map<CreatePaymentRequest, Payment>(payment);
         var createdPayment = await _paymentRepository.Create(mappedPayment, ct);
-        return Ok(createdPayment);
+        if (!createdPayment.IsSuccessful)
+        {
+            return BadRequest(createdPayment.Code);
+        }
+
+        return Ok();
     }
 }

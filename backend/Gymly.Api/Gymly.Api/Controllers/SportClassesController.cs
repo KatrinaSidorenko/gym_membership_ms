@@ -19,11 +19,17 @@ public class SportClassesController : ControllerBase
         _mapper = mapper;
     }
 
-    [HttpGet]
+    [HttpGet("active")]
     public async Task<IActionResult> GetAll(CancellationToken ct)
     {
-        var classes = await _sportClassRepository.GetAll(ct); // whre date > now
-        return Ok(classes);
+        var date = DateTime.Now;
+        var classes = await _sportClassRepository.GetAll(ct, date); // whre date > now
+        if (!classes.IsSuccessful)
+        {
+            return BadRequest(classes.Code);
+        }
+
+        return Ok(classes.Data);
     }
 
     [HttpPost]
@@ -31,13 +37,11 @@ public class SportClassesController : ControllerBase
     {
         var mappedClass = _mapper.Map<CreateSportClassRequest, SportClass>(sportClass);
         var createdClass = await _sportClassRepository.Create(mappedClass, ct);
-        return Ok(createdClass);
-    }
+        if (!createdClass.IsSuccessful)
+        {
+            return BadRequest(createdClass.Code);
+        }
 
-    [HttpGet("{id}/paymentsAmount")]
-    public async Task<IActionResult> GetClassPaymentsAmount(long id, CancellationToken ct)
-    {
-        var payments = await _sportClassRepository.GetClassPaymentsAmount(id, ct);
-        return Ok(payments);
+        return Ok();
     }
 }
