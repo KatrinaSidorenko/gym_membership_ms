@@ -1,0 +1,1 @@
+type Role = 'Admin' | 'Member';

@@ -1,11 +1,13 @@
 import { configureStore, createListenerMiddleware } from '@reduxjs/toolkit';
 import { authApi } from '@services/auth/authService';
+import { userSlice } from '@slices/user/userSlice';
 
 const listenerMiddleware = createListenerMiddleware();
 
 export const store = configureStore({
   reducer: {
     [authApi.reducerPath]: authApi.reducer,
+    [userSlice.name]: userSlice.reducer,
   },
   devTools: process.env.NODE_ENV !== 'production',
   middleware: (getDefaultMiddleware) =>
