@@ -23,7 +23,7 @@ public class SportClassesController : ControllerBase
     public async Task<IActionResult> GetAll(CancellationToken ct)
     {
         var date = DateTime.Now;
-        var classes = await _sportClassRepository.GetAll(ct, date); // whre date > now
+        var classes = await _sportClassRepository.GetAll(ct, date);
         if (!classes.IsSuccessful)
         {
             return BadRequest(classes.Code);
@@ -31,6 +31,8 @@ public class SportClassesController : ControllerBase
 
         return Ok(classes.Data);
     }
+
+    //todo all active classes for member with IsPaid = true or not
 
     [HttpPost]
     public async Task<IActionResult> Create([FromBody]CreateSportClassRequest sportClass, CancellationToken ct)

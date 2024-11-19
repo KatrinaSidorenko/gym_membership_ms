@@ -1,6 +1,7 @@
 ﻿using Gymly.Core.Models.Users;
 using Gymly.Infrastructure.Abstractions;
 using Gymly.Shared.Requests.Login;
+using Gymly.Shared.Responses.Auth;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,9 +12,11 @@ namespace Gymly.Api.Controllers;
 public class AuthController : ControllerBase
 {
     private readonly ITokenService _tokenService;
-    public AuthController(ITokenService tokenService)
+    private readonly IIdentityManager _identityManager;
+    public AuthController(ITokenService tokenService, IIdentityManager identityManager)
     {
         _tokenService = tokenService;
+        _identityManager = identityManager;
     }
 
     [HttpPost("login")]
@@ -29,7 +32,19 @@ public class AuthController : ControllerBase
 
         var token = _tokenService.GenerateToken(identity);
 
-        return Ok(token);
+        return Ok(new LoginResponse() { Token = token });
+    }
+
+    [HttpGet("identity")]
+    public async Task<IActionResult> GetIdentity(CancellationToken ct)
+    {
+        var identity = _identityManager.GetCurrentUser();
+        if (identity == null)
+        {
+            return Unauthorized();
+        }
+
+        return Ok(identity);
     }
 
 }

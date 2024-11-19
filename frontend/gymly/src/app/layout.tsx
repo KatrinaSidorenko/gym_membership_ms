@@ -1,5 +1,5 @@
-import "../styles/globals.css";
-import {NextUIProvider} from "@nextui-org/system";
+import '../styles/globals.css';
+import { ProvidersComponent } from '@/lib/providers/providers';
 
 export default function RootLayout({
   children,
@@ -8,11 +8,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>
-        <NextUIProvider>
-          {children}
-        </NextUIProvider>
-      </body>
+      <ProvidersComponent>
+        <body>{children}</body>
+      </ProvidersComponent>
     </html>
   );
 }
