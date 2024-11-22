@@ -1,12 +1,16 @@
 'use client';
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
+import { User } from '@serviceTypes/authModels';
+import { Role } from '@serviceTypes/constants';
 
 interface AuthContextType {
   isAuthenticated: boolean;
   login: (token: string) => void;
   logout: () => void;
   getToken: () => string | null;
+  getAccountRole: () => Role;
+  setAccountRole: (role: Role) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -37,8 +41,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     return localStorage.getItem('token');
   };
 
+  const setAccountRole = (role: Role) => {
+    localStorage.setItem('role', role);
+  }
+
+  const getAccountRole = () => {
+    return localStorage.getItem('role') as Role;
+  }
+
+
   return (
-    <AuthContext.Provider value={{ isAuthenticated, login, logout, getToken }}>
+    <AuthContext.Provider value={{ isAuthenticated, login, logout, getToken, setAccountRole, getAccountRole }}>
       {children}
     </AuthContext.Provider>
   );

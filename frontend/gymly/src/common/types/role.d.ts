@@ -1,1 +1,0 @@
-type Role = 'Admin' | 'Member';

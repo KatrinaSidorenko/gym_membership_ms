@@ -2,6 +2,7 @@
 using Gymly.Business.Abstractions;
 using Gymly.Core.Models;
 using Gymly.Shared.Requests.SportClass;
+using Gymly.Shared.Responses.SportClass;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -29,7 +30,9 @@ public class SportClassesController : ControllerBase
             return BadRequest(classes.Code);
         }
 
-        return Ok(classes.Data);
+        var mappedClasses = _mapper.Map<IEnumerable<SportClass>, IEnumerable<ExtendedSportClassResponse>>(classes.Data);
+
+        return Ok(mappedClasses);
     }
 
     //todo all active classes for member with IsPaid = true or not

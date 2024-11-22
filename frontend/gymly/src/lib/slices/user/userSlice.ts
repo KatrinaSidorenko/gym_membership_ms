@@ -1,8 +1,8 @@
-import { User } from '@slices/user/userModels';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from '@/lib/store';
+import { User } from '@/common/types/authModels';
 
-const initialState: User = {
+const initialState: User | undefined = {
   email: '',
   id: 0,
   name: '',
@@ -17,7 +17,17 @@ export const userSlice = createSlice({
   initialState,
   reducers: {
     setUser(state, action: PayloadAction<User>) {
-      state = action.payload;
+      if (action.payload) {
+        console.log(action.payload);
+
+        state.email = action.payload.email;
+        state.id = action.payload.id;
+        state.name = action.payload.name;
+        state.phone = action.payload.phone;
+        state.role = action.payload.role;
+      } else {
+        return undefined;
+      }
     },
   },
 });

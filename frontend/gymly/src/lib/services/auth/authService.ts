@@ -1,9 +1,10 @@
-import { createApi } from '@reduxjs/toolkit/query/react';
+import { BaseQueryArg, createApi } from '@reduxjs/toolkit/query/react';
 import baseAuthQuery from '@services/helpers/baseAuthQuery';
-import { LoginRequest, LoginResponse } from '@services/auth/authModels';
+import { LoginRequest, LoginResponse, User } from '@serviceTypes/authModels';
+import { setUser } from '@slices/user/userSlice';
 
-export const authApi = createApi({
-  reducerPath: 'apiAuth',
+export const authService = createApi({
+  reducerPath: 'authService',
   baseQuery: baseAuthQuery,
   endpoints: (builder) => ({
     login: builder.mutation<LoginResponse, LoginRequest>({
@@ -13,7 +14,17 @@ export const authApi = createApi({
         body: credentials,
       }),
     }),
+    userAccount: builder.query<User, void>({
+      query: (credentials) => ({
+        url: '/auth/account',
+        method: 'GET',
+      }),
+    }),
   }),
 });
 
-export const { useLoginMutation } = authApi;
+export const {
+  useLoginMutation,
+  useUserAccountQuery,
+  useLazyUserAccountQuery,
+} = authService;

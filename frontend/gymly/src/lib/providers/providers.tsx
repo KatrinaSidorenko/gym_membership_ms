@@ -2,9 +2,9 @@
 
 import { Provider } from 'react-redux';
 import { store } from '../store';
-import { NextUIProvider } from '@nextui-org/system';
-import { useRouter } from 'next/navigation';
 import { AuthProvider } from '@/lib/providers/authProvider';
+import { NextUIProvider } from '@nextui-org/react';
+import { useRouter } from 'next/navigation';
 
 export function ProvidersComponent({
   children,
@@ -15,9 +15,9 @@ export function ProvidersComponent({
 
   return (
     <NextUIProvider navigate={router.push}>
-      <AuthProvider>
-        <Provider store={store}>{children}</Provider>
-      </AuthProvider>
+      <Provider store={store}>
+        <AuthProvider>{children}</AuthProvider>
+      </Provider>
     </NextUIProvider>
   );
 }

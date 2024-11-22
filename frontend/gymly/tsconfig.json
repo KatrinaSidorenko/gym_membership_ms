@@ -22,9 +22,11 @@
       "@/*": ["./src/*"],
       "@services/*": ["./src/lib/services/*"],
       "@slices/*": ["./src/lib/slices/*"],
-      "@providers/*": ["./src/lib/providers/*"]
+      "@providers/*": ["./src/lib/providers/*"],
+      "@hooks/*": ["./src/lib/hooks/*"],
+      "@serviceTypes/*": ["./src/common/types/*"],
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "include": ["next-env.d.ts",  "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
   "exclude": ["node_modules"]
 }
