@@ -83,7 +83,7 @@ public class IdentityRepository : BaseRepository, IIdentityRepository
     {
         var aliases = new DbAliasesBuilder<Identity>()
             .AddAliases()
-            .AddAlias(m => m.GetId(), "member_id")
+            .AddAlias(m => m.Id, "member_id")
             .BuildAliases();
 
         var query = $"SELECT {aliases} FROM Member WHERE email = @email AND password = @password";

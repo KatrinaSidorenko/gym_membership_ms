@@ -17,7 +17,7 @@ public class PaymentsController : BaseController
         _paymentRepository = paymentRepository;
     }
 
-    [HttpGet]
+    [HttpGet("enrollments/statuses")]
     public async Task<IActionResult> GetMemberPayments(CancellationToken ct)
     {
         var currentMember = CurrentUser;
