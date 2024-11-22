@@ -20,7 +20,6 @@ public class SportClassRepository : BaseRepository, ISportClassRepository
     {
         var aliases = new DbAliasesBuilder<ExtendedSportClass>()
             .AddAliases()
-            .AddAlias(c => c.Id, "class_id")
             .BuildAliases();
         var query = $"SELECT {aliases}, [dbo].fn_total_sum_of_paid_enrollments(class_id) as PaidEnrollments FROM Class";
 

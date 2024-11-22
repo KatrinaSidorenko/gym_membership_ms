@@ -67,6 +67,12 @@ namespace Gymly.Shared.Helpers
             return this;
         }
 
+        public DbAliasesBuilder<T> AddAlias(string alias, string columnName)
+        {
+            _aliases.Add($"{columnName} AS {alias}");
+            return this;
+        }
+
         /// <summary>
         /// Builds the aliases as a comma-separated string.
         /// </summary>
@@ -80,6 +86,8 @@ namespace Gymly.Shared.Helpers
             {
                 return string.Join(", ", _aliases.Select(alias => $"{tableName}.{alias}"));
             }
+
+            _aliases.Reverse();
 
             return string.Join(", ", _aliases);
         }

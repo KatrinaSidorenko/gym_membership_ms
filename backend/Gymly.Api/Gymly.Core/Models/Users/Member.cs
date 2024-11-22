@@ -1,3 +1,11 @@
-﻿namespace Gymly.Core.Models.Users;
+﻿using Gymly.Core.Helpers;
 
-public class Member : Identity { }
+namespace Gymly.Core.Models.Users;
+
+public class Member : Identity 
+{
+    [CustomColumn("member_id")]
+    public long MemberId { get; set; }
+
+    public override long GetId() => MemberId;
+}

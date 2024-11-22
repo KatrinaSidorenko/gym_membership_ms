@@ -9,9 +9,9 @@ using Gymly.Shared.Results.Messages;
 
 namespace Gymly.Persistence.Repositories;
 
-public class MemberRepository : BaseRepository, IMemberRepository
+public class IdentityRepository : BaseRepository, IIdentityRepository
 {
-    public MemberRepository(IDbProvider dbProvider) : base(dbProvider) {}
+    public IdentityRepository(IDbProvider dbProvider) : base(dbProvider) {}
 
     public async Task<Result<IEnumerable<Identity>>> GetAll(CancellationToken ct)
     {
@@ -38,8 +38,8 @@ public class MemberRepository : BaseRepository, IMemberRepository
 
     public async Task<Result<long>> Create(Identity identity, CancellationToken ct)
     {
-        var query = @"INSERT INTO Member (name, email, phone) 
-                      VALUES (@name, @email, @phone);
+        var query = @"INSERT INTO Member (name, email, phone_number, password) 
+                      VALUES (@name, @email, @phone, @password);
                       SELECT SCOPE_IDENTITY();";
         try
         {
@@ -48,6 +48,9 @@ public class MemberRepository : BaseRepository, IMemberRepository
             parameters.Add("@name", identity.Name);
             parameters.Add("@email", identity.Email);
             parameters.Add("@phone", identity.Phone);
+
+            var hashedPassword = new PasswordHasher().HashPassword(identity.Password);
+            parameters.Add("@password", hashedPassword);
 
             var result = await connection.ExecuteScalarAsync<long>(query, parameters);
 
@@ -73,6 +76,35 @@ public class MemberRepository : BaseRepository, IMemberRepository
         catch (Exception ex)
         {
             return MemberStatuses.FailToCheckMemberExistence.GetFailureResult<bool>(ex.Message);
+        }
+    }
+
+    public async Task<Result<Identity>> GetIfExists(string email, string password, CancellationToken ct)
+    {
+        var aliases = new DbAliasesBuilder<Identity>()
+            .AddAliases()
+            .AddAlias(m => m.GetId(), "member_id")
+            .BuildAliases();
+
+        var query = $"SELECT {aliases} FROM Member WHERE email = @email AND password = @password";
+
+        try
+        {
+            var hasher = new PasswordHasher();
+            password = hasher.HashPassword(password);
+
+            using var connection = await DbProvider.CreateConnection(ct);
+            var member = await connection.QueryFirstOrDefaultAsync<Identity>(query, new { email, password });
+            if (member == null)
+            {
+                return MemberStatuses.MemberNotFound.GetFailureResult<Identity>();
+            }
+
+            return Result.Success(member);
+        }
+        catch (Exception ex)
+        {
+            return MemberStatuses.FailToGetMember.GetFailureResult<Identity>(ex.Message);
         }
     }
 }

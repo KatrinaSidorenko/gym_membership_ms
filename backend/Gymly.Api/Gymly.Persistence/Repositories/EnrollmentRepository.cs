@@ -11,8 +11,8 @@ namespace Gymly.Persistence.Repositories;
 
 public class EnrollmentRepository : BaseRepository,  IEnrollmentRepository
 {
-    private readonly IMemberRepository _memberRepository;
-    public EnrollmentRepository(IDbProvider dbProvider, IMemberRepository memberRepository) : base(dbProvider) 
+    private readonly IIdentityRepository _memberRepository;
+    public EnrollmentRepository(IDbProvider dbProvider, IIdentityRepository memberRepository) : base(dbProvider) 
     {
         _memberRepository = memberRepository;
     }
@@ -21,7 +21,6 @@ public class EnrollmentRepository : BaseRepository,  IEnrollmentRepository
     {
         var enrollmentAliases = new DbAliasesBuilder<Enrollment>()
             .AddAliases()
-            .AddAlias(e => e.Id, "enrollment_id")
             .BuildAliases("e");
 
         var memberAliases = new DbAliasesBuilder<Member>()
@@ -30,8 +29,11 @@ public class EnrollmentRepository : BaseRepository,  IEnrollmentRepository
 
         var paymentAliases = new DbAliasesBuilder<Payment>()
             .AddAliases()
-            .AddAlias(p => p.Id, "payment_id")
             .BuildAliases("p");
+
+        //var sportClassAliases = new DbAliasesBuilder<SportClass>()
+        //    .AddAliases()
+        //    .BuildAliases("c");
 
         var query = $@"
             SELECT 
@@ -55,7 +57,7 @@ public class EnrollmentRepository : BaseRepository,  IEnrollmentRepository
                     return enrollment;
                 },
                 new { classId },
-                splitOn: "member_id,payment_id");
+                splitOn: "EnrollmentId, MemberId, PaymentId");
 
             return Result.Success(enrollments);
         }

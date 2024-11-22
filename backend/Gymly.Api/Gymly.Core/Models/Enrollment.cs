@@ -3,8 +3,11 @@ using Gymly.Core.Models.Users;
 
 namespace Gymly.Core.Models;
 
-public class Enrollment : BaseEntity
+public class Enrollment 
 {
+    [CustomColumn("enrollment_id")]
+    public long EnrollmentId { get; set; }
+
     [CustomColumn("class_id")]
     public long ClassId { get; set; }
 

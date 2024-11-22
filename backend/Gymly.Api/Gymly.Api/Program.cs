@@ -1,6 +1,7 @@
 using Gymly.Api.Extensions;
 using Gymly.Infrastructure;
 using Gymly.Persistence;
+using Gymly.Persistence.Seeds;
 using Gymly.Shared.Profiles;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -35,6 +36,13 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+//using (var scope = app.Services.CreateScope())
+//{
+//    var services = scope.ServiceProvider;
+//    var seeder = new DapperSeeder(services);
+//    await seeder.Start();
+//}
 
 app.UseCors("AllowAll");
 app.UseHttpsRedirection();

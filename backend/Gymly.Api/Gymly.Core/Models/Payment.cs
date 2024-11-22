@@ -2,8 +2,11 @@
 
 namespace Gymly.Core.Models;
 
-public class Payment : BaseEntity
+public class Payment
 {
+    [CustomColumn("payment_id")]
+    public long PaymentId { get; set; }
+
     [CustomColumn("enrollment_id")] 
     public long EnrollmentId { get; set; }
 

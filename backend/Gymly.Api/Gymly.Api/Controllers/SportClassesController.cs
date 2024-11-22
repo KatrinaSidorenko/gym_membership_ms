@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Gymly.Api.Controllers;
 
-// TODO: add result transformation to some response model
 public class SportClassesController : BaseController
 {
     private readonly ISportClassRepository _sportClassRepository;

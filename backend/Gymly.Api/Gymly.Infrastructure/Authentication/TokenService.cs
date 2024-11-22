@@ -25,10 +25,10 @@ public class TokenService : ITokenService
 
         var claims = new List<Claim>
         {
-            new (ClaimTypes.NameIdentifier, identity.Id.ToString()),
+            new (ClaimTypes.NameIdentifier, identity.GetId().ToString()),
             new (ClaimTypes.Name, identity.Name!),
             new (ClaimTypes.Email, identity.Email!),
-            new (ClaimTypes.Role, identity.Role.ToString())
+            //new (ClaimTypes.Role, identity.Role?.ToString())
         };
 
         var expires = DateTime.UtcNow.AddDays(_jwtOptions.ExpiryInMinutes);

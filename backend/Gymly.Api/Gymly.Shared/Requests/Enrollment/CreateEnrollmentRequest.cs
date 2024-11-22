@@ -8,6 +8,5 @@ namespace Gymly.Shared.Requests.Enrollment;
 
 public class CreateEnrollmentRequest
 {
-    public long MemberId { get; set; }
     public long ClassId { get; set; }
 }

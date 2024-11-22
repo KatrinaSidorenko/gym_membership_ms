@@ -11,8 +11,8 @@ namespace Gymly.Api.Controllers;
 [ApiController]
 public class MembersController : BaseController
 {
-    private readonly IMemberRepository _memberRepository;
-    public MembersController(IMemberRepository memberRepository) 
+    private readonly IIdentityRepository _memberRepository;
+    public MembersController(IIdentityRepository memberRepository) 
     {
         _memberRepository = memberRepository;
     }

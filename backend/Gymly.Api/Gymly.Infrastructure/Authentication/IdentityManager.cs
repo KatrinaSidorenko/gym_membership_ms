@@ -29,7 +29,7 @@ public class IdentityManager : IIdentityManager
         var email = claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
         var role = claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).FirstOrDefault();
 
-        if (id == null || string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(role))
+        if (id == null || string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(email))
         {
             return null;
         }

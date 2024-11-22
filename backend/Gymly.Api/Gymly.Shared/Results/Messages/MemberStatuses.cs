@@ -7,4 +7,5 @@ public class MemberStatuses
     public static ResultData FailToCheckMemberExistence = new("FAIL_TO_CHECK_MEMBER_EXISTENCE", "Fail to check member existence");
     public static ResultData NoSuchMemberExists = new("NO_SUCH_MEMBER_EXISTS", "No such member exists");
     public static ResultData MemberNotFound = new("MEMBER_NOT_FOUND", "Member not found");
+    public static ResultData FailToGetMember = new("FAIL_TO_GET_MEMBER", "Fail to get member");
 }

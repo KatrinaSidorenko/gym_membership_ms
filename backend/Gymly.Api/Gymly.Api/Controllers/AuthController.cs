@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Gymly.Business.Abstractions;
 using Gymly.Core.Models.Users;
 using Gymly.Infrastructure.Abstractions;
 using Gymly.Shared.Requests.Login;
@@ -11,26 +12,23 @@ namespace Gymly.Api.Controllers;
 public class AuthController : BaseController
 {
     private readonly ITokenService _tokenService;
-    private readonly IIdentityManager _identityManager;
-    public AuthController(ITokenService tokenService, IIdentityManager identityManager)
+    private readonly IIdentityRepository _identityRepository;
+    public AuthController(ITokenService tokenService, IIdentityRepository identityRepository)
     {
         _tokenService = tokenService;
-        _identityManager = identityManager;
+        _identityRepository = identityRepository;
     }
 
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginRequest userInfo, CancellationToken ct)
     {
-        var identity = new Identity
+        var identityResult = await _identityRepository.GetIfExists(userInfo.Email, userInfo.Password, ct);
+        if (identityResult == null)
         {
-            Id = 1,
-            Email = userInfo.Email,
-            Name = "Kate",
-            Role = "Admin",
-            Phone = "123456789"
-        };
+            return ServerError(identityResult);
+        }
 
-        var token = _tokenService.GenerateToken(identity);
+        var token = _tokenService.GenerateToken(identityResult.Data);
 
         return Ok(new LoginResponse() { Token = token });
     }
@@ -38,7 +36,7 @@ public class AuthController : BaseController
     [HttpGet("account")]
     public async Task<IActionResult> GetIdentity(CancellationToken ct)
     {
-        var identity = _identityManager.GetCurrentUser();
+        var identity = IdentityManager.GetCurrentUser();
         if (identity == null)
         {
             return Unauthorized();

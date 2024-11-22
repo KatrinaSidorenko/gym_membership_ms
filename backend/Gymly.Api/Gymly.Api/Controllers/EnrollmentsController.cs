@@ -39,6 +39,7 @@ public class EnrollmentsController : BaseController
 
         mappedEnrollment.MemberId = CurrentUser.Id;
         var enrollmentResult = await _enrollmentRepository.EnrollMemberToClass(mappedEnrollment, ct);
+        // todo: create mapping for EnrollmentResponse
         if (!enrollmentResult.IsSuccessful)
         {
             return ServerError(enrollmentResult);
