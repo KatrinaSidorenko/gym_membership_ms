@@ -58,4 +58,21 @@ public class MemberRepository : BaseRepository, IMemberRepository
             return MemberStatuses.FailToCreateMember.GetFailureResult<long>(ex.Message);
         }
     }
+
+    public async Task<Result<bool>> IsExists(long memberId, CancellationToken ct)
+    {
+        var query = "SELECT COUNT(*) FROM Member WHERE member_id = @memberId";
+
+        try
+        {
+            using var connection = await DbProvider.CreateConnection(ct);
+            var count = await connection.ExecuteScalarAsync<int>(query, new { memberId });
+
+            return Result.Success(count > 0);
+        }
+        catch (Exception ex)
+        {
+            return MemberStatuses.FailToCheckMemberExistence.GetFailureResult<bool>(ex.Message);
+        }
+    }
 }

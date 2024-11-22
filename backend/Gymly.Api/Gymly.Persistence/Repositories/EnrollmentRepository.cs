@@ -11,7 +11,11 @@ namespace Gymly.Persistence.Repositories;
 
 public class EnrollmentRepository : BaseRepository,  IEnrollmentRepository
 {
-    public EnrollmentRepository(IDbProvider dbProvider) : base(dbProvider) {}
+    private readonly IMemberRepository _memberRepository;
+    public EnrollmentRepository(IDbProvider dbProvider, IMemberRepository memberRepository) : base(dbProvider) 
+    {
+        _memberRepository = memberRepository;
+    }
 
     public async Task<Result<IEnumerable<Enrollment>>> GetByClassId(long classId, CancellationToken ct)
     {
@@ -71,6 +75,12 @@ public class EnrollmentRepository : BaseRepository,  IEnrollmentRepository
         try
         {
             using var connection = await DbProvider.CreateConnection(ct);
+            var isMemberExists = await _memberRepository.IsExists(enrollment.MemberId, ct);
+            if (!isMemberExists.IsSuccessful || !isMemberExists.Data)
+            {
+                return MemberStatuses.MemberNotFound.GetFailureResult<bool>();
+            }
+
             var enrollmentId = await connection.ExecuteScalarAsync<long>(query, enrollment);
 
             return Result.Success(true);

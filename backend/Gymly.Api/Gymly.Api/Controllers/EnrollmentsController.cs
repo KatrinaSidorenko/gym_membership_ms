@@ -22,13 +22,13 @@ public class EnrollmentsController : BaseController
     [HttpGet("{classId}")]
     public async Task<IActionResult> GetByClassId(int classId, CancellationToken ct)
     {
-        var enrollments = await _enrollmentRepository.GetByClassId(classId, ct);
-        if (!enrollments.IsSuccessful)
+        var enrollmentsResult = await _enrollmentRepository.GetByClassId(classId, ct);
+        if (!enrollmentsResult.IsSuccessful)
         {
-            return BadRequest(enrollments.Code);
+            return ServerError(enrollmentsResult);
         }
 
-        return Ok(enrollments.Data);
+        return Ok(enrollmentsResult.Data);
     }
 
     [HttpPost]
@@ -38,8 +38,11 @@ public class EnrollmentsController : BaseController
         if (CurrentUser is null) { return Unauthorized(); }
 
         mappedEnrollment.MemberId = CurrentUser.Id;
-
-        await _enrollmentRepository.EnrollMemberToClass(mappedEnrollment, ct);
+        var enrollmentResult = await _enrollmentRepository.EnrollMemberToClass(mappedEnrollment, ct);
+        if (!enrollmentResult.IsSuccessful)
+        {
+            return ServerError(enrollmentResult);
+        }
 
         return Ok();
     }

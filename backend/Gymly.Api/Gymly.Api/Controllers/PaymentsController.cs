@@ -24,7 +24,7 @@ public class PaymentsController : BaseController
         var paymentsResult = await _paymentRepository.GetMemberPayments(currentMember.Id, ct);
         if (!paymentsResult.IsSuccessful)
         {
-            return BadRequest(paymentsResult);
+            return ServerError(paymentsResult);
         }
 
         return Ok(paymentsResult.Data);
@@ -37,7 +37,7 @@ public class PaymentsController : BaseController
         var createdPayment = await _paymentRepository.Create(mappedPayment, ct);
         if (!createdPayment.IsSuccessful)
         {
-            return BadRequest(createdPayment.Code);
+            return ServerError(createdPayment);
         }
 
         return Ok();

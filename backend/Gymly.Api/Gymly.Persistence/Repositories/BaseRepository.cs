@@ -1,4 +1,5 @@
-﻿using Gymly.Persistence.Providers;
+﻿using Gymly.Business.Abstractions;
+using Gymly.Persistence.Providers;
 
 namespace Gymly.Persistence.Repositories;
 

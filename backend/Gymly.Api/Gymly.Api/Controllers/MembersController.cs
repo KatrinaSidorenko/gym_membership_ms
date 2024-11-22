@@ -20,23 +20,23 @@ public class MembersController : BaseController
     [HttpGet]
     public async Task<IActionResult> GetAll(CancellationToken ct)
     {
-        var members = await _memberRepository.GetAll(ct);
-        if (!members.IsSuccessful)
+        var membersResult = await _memberRepository.GetAll(ct);
+        if (!membersResult.IsSuccessful)
         {
-            return BadRequest(members.Code);
+            return ServerError(membersResult);
         }
 
-        return Ok(members.Data);
+        return Ok(membersResult.Data);
     }
 
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateMemberRequest member, CancellationToken ct)
     {
         var mappedIdentity = Mapper.Map<CreateMemberRequest, Identity>(member);
-        var createdMember = await _memberRepository.Create(mappedIdentity, ct);
-        if (!createdMember.IsSuccessful)
+        var createdMemberResult = await _memberRepository.Create(mappedIdentity, ct);
+        if (!createdMemberResult.IsSuccessful)
         {
-            return BadRequest(createdMember.Code);
+            return ServerError(createdMemberResult);
         }
 
         return Ok();
