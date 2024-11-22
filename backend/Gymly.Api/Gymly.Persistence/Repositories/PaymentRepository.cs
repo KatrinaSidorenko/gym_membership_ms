@@ -9,15 +9,9 @@ using Gymly.Shared.Results.Messages;
 
 namespace Gymly.Persistence.Repositories;
 
-// todo: add logical checks exist 
-public class PaymentRepository : IPaymentRepository
+public class PaymentRepository : BaseRepository, IPaymentRepository
 {
-    private readonly IDbProvider _dbProvider;
-
-    public PaymentRepository(IDbProvider dbProvider)
-    {
-        _dbProvider = dbProvider;
-    }
+    public PaymentRepository(IDbProvider dbProvider) : base(dbProvider) {}
 
     public async Task<Result<IEnumerable<MemberPayment>>> GetMemberPayments(long memberId, CancellationToken ct)
     {   
@@ -30,7 +24,7 @@ public class PaymentRepository : IPaymentRepository
 
         try
         {
-            using var connection = await _dbProvider.CreateConnection(ct);
+            using var connection = await DbProvider.CreateConnection(ct);
             var payments = await connection.QueryAsync<MemberPayment>(query, new { memberId });
 
             return Result.Success(payments);
@@ -49,7 +43,7 @@ public class PaymentRepository : IPaymentRepository
 
         try
         {
-            using var connection = await _dbProvider.CreateConnection(ct);
+            using var connection = await DbProvider.CreateConnection(ct);
             var result = await connection.ExecuteScalarAsync<long>(query, payment);
             return Result.Success(result);
         }

@@ -10,9 +10,6 @@ public static class SwaggerGenerationExtension
     {
         services.AddSwaggerGen(options =>
         {
-            // TODO: If we add in the future summary comments for each endpoint of api
-            // options.IncludeXmlComments(GetSwaggerXmlCommentsDocumentPath(), includeControllerXmlComments: true);
-
             var playerAuthenticationSchema =
                 GetJwtBearerOpenApiSecuritySchemeByAuthenticationSchema(AuthenticationSchema.User);
 

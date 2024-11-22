@@ -13,6 +13,7 @@ public static class LayerRegistration
         services.AddScoped<ISportClassRepository, SportClassRepository>();
         services.AddScoped<IEnrollmentRepository, EnrollmentRepository>();
         services.AddScoped<IPaymentRepository, PaymentRepository>();
+        services.AddScoped<IMemberRepository, MemberRepository>();
 
         var connectionString = configuration.GetConnectionString("DefaultConnection");
         services.AddScoped<IDbProvider, DbProvider>(p => new DbProvider(connectionString));

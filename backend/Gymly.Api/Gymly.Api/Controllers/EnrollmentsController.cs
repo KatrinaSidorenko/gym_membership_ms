@@ -9,19 +9,14 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Gymly.Api.Controllers;
 
-[Route("api/[controller]")]
-[ApiController]
+
 [Authorize]
-public class EnrollmentsController : ControllerBase
+public class EnrollmentsController : BaseController
 {
     private readonly IEnrollmentRepository _enrollmentRepository;
-    private readonly IMapper _mapper;
-    private readonly IIdentityManager _identityManager;
-    public EnrollmentsController(IEnrollmentRepository enrollmentRepository, IMapper mapper, IIdentityManager identityManager)
+    public EnrollmentsController(IEnrollmentRepository enrollmentRepository)
     {
         _enrollmentRepository = enrollmentRepository;   
-        _mapper = mapper;
-        _identityManager = identityManager;
     }
 
     [HttpGet("{classId}")]
@@ -39,14 +34,10 @@ public class EnrollmentsController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> EnrollMemberToClass([FromBody] CreateEnrollmentRequest createEnrollment, CancellationToken ct)
     {
-        var mappedEnrollment = _mapper.Map<CreateEnrollmentRequest, Enrollment>(createEnrollment);
-        var identity = _identityManager.GetCurrentUser();
-        if (identity == null)
-        {
-            return Unauthorized();
-        }
+        var mappedEnrollment = Mapper.Map<CreateEnrollmentRequest, Enrollment>(createEnrollment);
+        if (CurrentUser is null) { return Unauthorized(); }
 
-        mappedEnrollment.MemberId = identity.Id;
+        mappedEnrollment.MemberId = CurrentUser.Id;
 
         await _enrollmentRepository.EnrollMemberToClass(mappedEnrollment, ct);
 

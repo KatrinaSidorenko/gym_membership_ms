@@ -9,13 +9,9 @@ using Gymly.Shared.Results.Messages;
 
 namespace Gymly.Persistence.Repositories;
 
-public class EnrollmentRepository : IEnrollmentRepository
+public class EnrollmentRepository : BaseRepository,  IEnrollmentRepository
 {
-    public IDbProvider DbProvider { get; set; }
-    public EnrollmentRepository(IDbProvider dbProvider)
-    {
-        DbProvider = dbProvider;
-    }
+    public EnrollmentRepository(IDbProvider dbProvider) : base(dbProvider) {}
 
     public async Task<Result<IEnumerable<Enrollment>>> GetByClassId(long classId, CancellationToken ct)
     {

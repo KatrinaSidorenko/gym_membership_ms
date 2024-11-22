@@ -2,39 +2,38 @@
 using Gymly.Business.Abstractions;
 using Gymly.Core.Models;
 using Gymly.Shared.Requests.Payment;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Gymly.Api.Controllers;
 
-[Route("api/[controller]")]
-[ApiController]
-public class PaymentsController : ControllerBase
+[Authorize]
+public class PaymentsController : BaseController
 {
     private readonly IPaymentRepository _paymentRepository;
-    private readonly IMapper _mapper;
-    public PaymentsController(IPaymentRepository paymentRepository, IMapper mapper)
+    public PaymentsController(IPaymentRepository paymentRepository)
     {
         _paymentRepository = paymentRepository;
-        _mapper = mapper;
     }
 
-    [HttpGet("{memberId}")]
-    public async Task<IActionResult> GetMemberPayments(long memberId, CancellationToken ct)
+    [HttpGet]
+    public async Task<IActionResult> GetMemberPayments(CancellationToken ct)
     {
-        var payments = await _paymentRepository.GetMemberPayments(memberId, ct);
-        if (!payments.IsSuccessful)
+        var currentMember = CurrentUser;
+        var paymentsResult = await _paymentRepository.GetMemberPayments(currentMember.Id, ct);
+        if (!paymentsResult.IsSuccessful)
         {
-            return BadRequest(payments.Code);
+            return BadRequest(paymentsResult);
         }
 
-        return Ok(payments.Data);
+        return Ok(paymentsResult.Data);
     }
 
     [HttpPost] // with a help of trigger
     public async Task<IActionResult> Create([FromBody] CreatePaymentRequest payment, CancellationToken ct)
     {
-        var mappedPayment = _mapper.Map<CreatePaymentRequest, Payment>(payment);
+        var mappedPayment = Mapper.Map<CreatePaymentRequest, Payment>(payment);
         var createdPayment = await _paymentRepository.Create(mappedPayment, ct);
         if (!createdPayment.IsSuccessful)
         {

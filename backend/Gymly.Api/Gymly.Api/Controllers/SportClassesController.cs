@@ -3,21 +3,16 @@ using Gymly.Business.Abstractions;
 using Gymly.Core.Models;
 using Gymly.Shared.Requests.SportClass;
 using Gymly.Shared.Responses.SportClass;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Gymly.Api.Controllers;
 
-[Route("api/[controller]")]
-[ApiController]
-public class SportClassesController : ControllerBase
+public class SportClassesController : BaseController
 {
     private readonly ISportClassRepository _sportClassRepository;
-    private readonly IMapper _mapper;
-    public SportClassesController(ISportClassRepository sportClassRepository, IMapper mapper)
+    public SportClassesController(ISportClassRepository sportClassRepository)
     {
         _sportClassRepository = sportClassRepository;
-        _mapper = mapper;
     }
 
     [HttpGet("active")]
@@ -30,7 +25,7 @@ public class SportClassesController : ControllerBase
             return BadRequest(classes.Code);
         }
 
-        var mappedClasses = _mapper.Map<IEnumerable<SportClass>, IEnumerable<ExtendedSportClassResponse>>(classes.Data);
+        var mappedClasses = Mapper.Map<IEnumerable<SportClass>, IEnumerable<ExtendedSportClassResponse>>(classes.Data);
 
         return Ok(mappedClasses);
     }
@@ -40,7 +35,7 @@ public class SportClassesController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Create([FromBody]CreateSportClassRequest sportClass, CancellationToken ct)
     {
-        var mappedClass = _mapper.Map<CreateSportClassRequest, SportClass>(sportClass);
+        var mappedClass = Mapper.Map<CreateSportClassRequest, SportClass>(sportClass);
         var createdClass = await _sportClassRepository.Create(mappedClass, ct);
         if (!createdClass.IsSuccessful)
         {

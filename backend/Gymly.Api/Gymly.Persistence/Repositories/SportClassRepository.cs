@@ -12,14 +12,9 @@ using System.Security.Cryptography;
 
 namespace Gymly.Persistence.Repositories;
 
-public class SportClassRepository : ISportClassRepository
+public class SportClassRepository : BaseRepository, ISportClassRepository
 {
-    private readonly IDbProvider _dbProvider;
-    public SportClassRepository(IDbProvider dbProvider)
-    {
-        _dbProvider = dbProvider;
-    }
-
+    public SportClassRepository(IDbProvider dbProvider) : base(dbProvider) {}
 
     public async Task<Result<IEnumerable<ExtendedSportClass>>> GetAll(CancellationToken ct, DateTime? dateTime = null)
     {
@@ -28,6 +23,7 @@ public class SportClassRepository : ISportClassRepository
             .AddAlias(c => c.Id, "class_id")
             .BuildAliases();
         var query = $"SELECT {aliases}, [dbo].fn_total_sum_of_paid_enrollments(class_id) as PaidEnrollments FROM Class";
+
         if (dateTime.HasValue)
         {
             query += $" WHERE date >= '{dateTime.Value.ToString("yyyy-MM-dd")}'";
@@ -35,7 +31,7 @@ public class SportClassRepository : ISportClassRepository
 
         try
         {
-            using var connection = await _dbProvider.CreateConnection(ct);
+            using var connection = await DbProvider.CreateConnection(ct);
             var classes = await connection.QueryAsync<ExtendedSportClass>(query);
 
             return Result.Success(classes);
@@ -52,7 +48,7 @@ public class SportClassRepository : ISportClassRepository
 
         try
         {
-            using var connection = await _dbProvider.CreateConnection(ct);
+            using var connection = await DbProvider.CreateConnection(ct);
 
             var parameters = new DynamicParameters();
             parameters.Add("@class_name", sportClass.Name);
@@ -70,16 +66,4 @@ public class SportClassRepository : ISportClassRepository
         }
        
     }
-
-    //public async Task<decimal> GetClassPaymentsAmount(long classId, CancellationToken ct) // todo shoud be in in scalar function call
-    //{
-    //    var query = $@"select sum(p.amount_paid) from [dbo].Enrollment e
-    //            inner join [dbo].Payment p
-    //            on e.enrollment_id = p.enrollment_id
-    //            where e.class_id = @classId;";
-
-    //    using var connection = await _dbProvider.CreateConnection(ct);
-    //    var result = await connection.ExecuteScalarAsync<decimal>(query, new { classId });
-    //    return result;
-    //}
 }

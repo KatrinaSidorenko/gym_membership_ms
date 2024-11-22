@@ -8,18 +8,14 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Gymly.Api.Controllers;
 
-[Route("api/[controller]")]
-[ApiController]
-public class AuthController : ControllerBase
+public class AuthController : BaseController
 {
     private readonly ITokenService _tokenService;
     private readonly IIdentityManager _identityManager;
-    private readonly IMapper _mapper;
-    public AuthController(ITokenService tokenService, IIdentityManager identityManager, IMapper mapper)
+    public AuthController(ITokenService tokenService, IIdentityManager identityManager)
     {
         _tokenService = tokenService;
         _identityManager = identityManager;
-        _mapper = mapper;
     }
 
     [HttpPost("login")]
@@ -48,7 +44,7 @@ public class AuthController : ControllerBase
             return Unauthorized();
         }
 
-        return Ok(_mapper.Map<UserResponse>(identity));
+        return Ok(Mapper.Map<UserResponse>(identity));
     }
 
 }
